@@ -1,7 +1,14 @@
 import os
+import sys
 import random
 import argparse
 from pathlib import Path
+
+# Ensure src directory is in sys.path for internal module imports
+src_dir = str(Path(__file__).parent.resolve())
+if src_dir not in sys.path:
+    sys.path.append(src_dir)
+
 import cv2
 import yaml
 import numpy as np
@@ -10,7 +17,7 @@ import torch.nn as nn
 import torchvision
 from torchvision.models.detection.ssdlite import SSDLiteClassificationHead
 from torch.utils.data import DataLoader
-from dataset import ObjectDetectionDataset, get_transforms, collate_fn
+from dataset import ObjectDetectionDataset, get_transforms, collate_fn, download_and_extract, split_dataset
 
 # Define a color palette for visual boxes (B, G, R)
 COLOR_PALETTE = [
@@ -210,6 +217,8 @@ def run_evaluation(config_path):
         config = yaml.safe_load(f)
 
     data_dir = config['dataset']['data_dir']
+    dataset_url = config['dataset']['zip_url']
+    max_images = config['dataset'].get('max_images', None)
     img_size = config['dataset']['img_size']
     num_classes = config['dataset']['num_classes']
     classes = config['dataset']['classes']
@@ -217,6 +226,13 @@ def run_evaluation(config_path):
     device = torch.device('cuda' if torch.cuda.is_available() and device_name == 'cuda' else 'cpu')
 
     print(f"Running evaluation on device: {device}")
+
+    # Check if dataset test split exists, download and split if missing
+    test_img_dir = Path(data_dir) / "test" / "images"
+    if not test_img_dir.exists() or len(list(test_img_dir.glob("*"))) == 0:
+        print("Test dataset not found. Downloading and splitting dataset...")
+        extracted_path = download_and_extract(dataset_url, data_dir)
+        split_dataset(extracted_path, data_dir, max_images=max_images, seed=42)
 
     # Load test dataset
     transform = get_transforms(img_size, is_train=False)

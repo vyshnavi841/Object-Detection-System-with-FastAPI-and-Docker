@@ -1,6 +1,13 @@
 import os
+import sys
 import yaml
 from pathlib import Path
+
+# Ensure src directory is in sys.path for internal module imports
+src_dir = str(Path(__file__).parent.resolve())
+if src_dir not in sys.path:
+    sys.path.append(src_dir)
+
 import cv2
 import numpy as np
 import torch
@@ -46,7 +53,7 @@ from evaluate import get_model
 
 # Setup Model
 device = torch.device('cpu') # Always default to CPU for API container inference unless specified otherwise
-model = get_model(num_classes, weights_name="NONE")
+model = get_model(num_classes, weights_name="DEFAULT")
 
 weights_path = Path("best_model.pth")
 if weights_path.exists():
@@ -82,7 +89,7 @@ def read_root():
 @app.post("/predict", response_model=PredictResponse, status_code=200)
 async def predict(file: UploadFile = File(...)):
     # Validate uploaded file type
-    if not file.content_type.startswith("image/"):
+    if file.content_type and not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Uploaded file is not a valid image.")
 
     try:

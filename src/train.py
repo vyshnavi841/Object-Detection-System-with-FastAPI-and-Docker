@@ -1,7 +1,14 @@
 import os
+import sys
 import argparse
 import time
 from pathlib import Path
+
+# Ensure src directory is in sys.path for internal module imports
+src_dir = str(Path(__file__).parent.resolve())
+if src_dir not in sys.path:
+    sys.path.append(src_dir)
+
 import yaml
 import torch
 from torch.utils.data import DataLoader
