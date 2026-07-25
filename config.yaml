@@ -1,0 +1,21 @@
+dataset:
+  name: "african-wildlife"
+  zip_url: "https://github.com/ultralytics/assets/releases/download/v0.0.0/african-wildlife.zip"
+  data_dir: "data"
+  img_size: 320
+  num_classes: 4
+  classes: ["buffalo", "elephant", "rhino", "zebra"]
+  max_images: 500  # Restrict to first 500 images for faster CPU training. Set to null for full dataset.
+
+training:
+  batch_size: 8
+  epochs: 3
+  learning_rate: 0.001
+  optimizer: "adam"
+  weight_decay: 0.0005
+  num_workers: 0  # 0 is recommended for PyTorch DataLoader on Windows
+  device: "cpu"
+
+inference:
+  confidence_threshold: 0.5
+  iou_threshold: 0.5

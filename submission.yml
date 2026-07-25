@@ -1,0 +1,12 @@
+version: "1.0"
+commands:
+  # Command to run the training pipeline
+  train: "python src/train.py --config config.yaml"
+  
+  # Command to calculate mAP and generate visualizations
+  evaluate: "python src/evaluate.py --config config.yaml"
+  
+  # Command to build and run the Dockerized API
+  deploy: |
+    docker build -t object-detector .
+    docker run -d -p 8000:8000 --name od-container object-detector

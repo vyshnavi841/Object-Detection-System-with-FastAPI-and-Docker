@@ -1,0 +1,19 @@
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Datasets & ZIP files (Required by project spec)
+data/
+*.zip
+
+# System & OS metadata
+.DS_Store
+Thumbs.db
+.env
